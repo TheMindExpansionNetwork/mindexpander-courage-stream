@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* ── Full composition ── */
+    .composition {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+    }
+
+    /* ── Cyberpunk Room Background ── */
+    .room-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(20, 5, 40, 0.9) 0%, rgba(5, 2, 15, 1) 70%),
+        linear-gradient(180deg, #0a0015 0%, #050010 50%, #020008 100%);
+      z-index: 0;
+    }
+
+    /* Neon ambient light */
+    .neon-ambient {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(ellipse at 80% 20%, rgba(255, 0, 128, 0.04) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 100%, rgba(120, 0, 255, 0.06) 0%, transparent 30%);
+      animation: neonPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes neonPulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    /* ── TV Frame Image ── */
+    .tv-frame {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      background: url('assets/cyberpunk-tv-frame.png') center/cover no-repeat;
+    }
+
+    /* ── Green Screen Area (for OBS chroma key) ── */
+    .greenscreen {
+      position: absolute;
+      /* These define the "window" of the TV screen within the frame */
+      /* Adjust these values based on where the green area is in the image */
+      top: 12%;
+      left: 18%;
+      width: 64%;
+      height: 68%;
+      z-index: 5;
+      background: #00FF00;
+      /* Rounded CRT corners */
+      border-radius: 8px;
+    }
+
+    /* ── Scan Lines Overlay ── */
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(0, 0, 0, 0.12) 1px,
+        rgba(0, 0, 0, 0.12) 2px
+      );
+      mix-blend-mode: multiply;
+    }
+
+    /* ── Rolling Scan Bar ── */
+    .scan-bar {
+      position: absolute;
+      left: 18%;
+      width: 64%;
+      height: 12%;
+      z-index: 25;
+      pointer-events: none;
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(100, 200, 255, 0.04) 30%,
+        rgba(100, 200, 255, 0.08) 50%,
+        rgba(100, 200, 255, 0.04) 70%,
+        transparent 100%
+      );
+    }
+
+    /* ── VHS Noise ── */
+    .vhs-noise {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ── VHS Glitch Bar ── */
+    .vhs-glitch {
+      position: absolute;
+      left: 18%;
+      width: 64%;
+      height: 3px;
+      z-index: 35;
+      pointer-events: none;
+      background: rgba(255, 255, 255, 0.15);
+      opacity: 0;
+    }
+
+    /* ── CRT Vignette ── */
+    .crt-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse at 50% 50%,
+        transparent 55%,
+        rgba(0, 0, 0, 0.3) 80%,
+        rgba(0, 0, 0, 0.6) 100%
+      );
+    }
+
+    /* ── Phosphor Glow ── */
+    .phosphor-glow {
+      position: absolute;
+      top: 12%;
+      left: 18%;
+      width: 64%;
+      height: 68%;
+      z-index: 22;
+      pointer-events: none;
+      border-radius: 8px;
+      box-shadow:
+        inset 0 0 40px rgba(100, 255, 100, 0.03),
+        inset 0 0 80px rgba(100, 255, 100, 0.02);
+    }
+
+    /* ── Static Flash ── */
+    .static-flash {
+      position: absolute;
+      inset: 0;
+      z-index: 45;
+      pointer-events: none;
+      background: white;
+      opacity: 0;
+    }
+
+    /* ── Channel Badge ── */
+    .channel-badge {
+      position: absolute;
+      top: 16%;
+      right: 22%;
+      z-index: 50;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 2px 2px 4px rgba(0,0,0,0.8);
+      letter-spacing: 3px;
+    }
+
+    /* ── REC Indicator ── */
+    .rec-indicator {
+      position: absolute;
+      top: 16%;
+      left: 22%;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      color: rgba(255, 60, 60, 0.9);
+      font-weight: 700;
+      text-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+    }
+
+    .rec-dot {
+      width: 12px;
+      height: 12px;
+      background: #ff3333;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+    }
+
+    /* ── Chat Ticker (bottom of screen) ── */
+    .chat-ticker {
+      position: absolute;
+      bottom: 15%;
+      left: 20%;
+      width: 60%;
+      z-index: 55;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      color: rgba(200, 255, 200, 0.7);
+      text-shadow: 0 0 8px rgba(0, 255, 100, 0.3);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .chat-ticker-text {
+      display: inline-block;
+    }
+
+    /* ── Lower Third Title ── */
+    .lower-third {
+      position: absolute;
+      bottom: 8%;
+      left: 22%;
+      z-index: 60;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 28px;
+      color: #00ffff;
+      text-shadow:
+        0 0 20px rgba(0, 255, 255, 0.6),
+        0 0 40px rgba(0, 255, 255, 0.3),
+        3px 3px 6px rgba(0, 0, 0, 0.8);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .lower-third-sub {
+      position: absolute;
+      bottom: 5.5%;
+      left: 22%;
+      z-index: 60;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      color: rgba(255, 0, 128, 0.8);
+      text-shadow: 0 0 10px rgba(255, 0, 128, 0.4);
+      letter-spacing: 2px;
+    }
+
+    /* ── Audio Visualizer ── */
+    .audio-viz {
+      position: absolute;
+      bottom: 16%;
+      left: 21%;
+      z-index: 55;
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      height: 24px;
+    }
+
+    .viz-bar {
+      width: 4px;
+      background: rgba(0, 255, 200, 0.5);
+      border-radius: 2px;
+      box-shadow: 0 0 6px rgba(0, 255, 200, 0.3);
+    }
+
+    /* ── Neon Border Glow (around screen) ── */
+    .neon-border {
+      position: absolute;
+      top: 11.5%;
+      left: 17.5%;
+      width: 65%;
+      height: 69%;
+      z-index: 3;
+      pointer-events: none;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      box-shadow:
+        0 0 15px rgba(0, 255, 255, 0.15),
+        inset 0 0 15px rgba(0, 255, 255, 0.1);
+      animation: neonBorderPulse 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes neonBorderPulse {
+      0% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.1), inset 0 0 10px rgba(0, 255, 255, 0.05); }
+      100% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.25), inset 0 0 20px rgba(0, 255, 255, 0.15); }
+    }
+
+    /* ── Dust Particles ── */
+    .dust-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ── Cyberpunk HUD Corners ── */
+    .hud-corner {
+      position: absolute;
+      z-index: 65;
+      pointer-events: none;
+      width: 40px;
+      height: 40px;
+      border-color: rgba(0, 255, 255, 0.3);
+      border-style: solid;
+    }
+
+    .hud-corner.tl { top: 11%; left: 17%; border-width: 2px 0 0 2px; }
+    .hud-corner.tr { top: 11%; right: 17%; border-width: 2px 2px 0 0; }
+    .hud-corner.bl { bottom: 12%; left: 17%; border-width: 0 0 2px 2px; }
+    .hud-corner.br { bottom: 12%; right: 17%; border-width: 0 2px 2px 0; }
+
+    /* ── Status Text ── */
+    .status-bar {
+      position: absolute;
+      top: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 70;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: rgba(0, 255, 255, 0.4);
+      letter-spacing: 6px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div
+    id="root"
+    data-composition-id="cyberpunk-tv"
+    data-start="0"
+    data-duration="30"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div class="composition" id="scene">
+      <!-- Background layers -->
+      <div class="room-bg"></div>
+      <div class="neon-ambient clip" data-start="0" data-duration="30" data-track-index="0"></div>
+      <div class="dust-layer" id="dustLayer"></div>
+
+      <!-- Neon border glow -->
+      <div class="neon-border clip" data-start="0" data-duration="30" data-track-index="1"></div>
+
+      <!-- Green screen area (OBS chroma key target) -->
+      <div class="greenscreen clip" data-start="0" data-duration="30" data-track-index="2"></div>
+
+      <!-- TV Frame over everything -->
+      <div class="tv-frame clip" data-start="0" data-duration="30" data-track-index="10"></div>
+
+      <!-- CRT Effects -->
+      <div class="scanlines clip" data-start="0" data-duration="30" data-track-index="15"></div>
+      <div class="scan-bar clip" data-start="0" data-duration="30" data-track-index="16" id="scanBar"></div>
+      <div class="vhs-noise clip" data-start="0" data-duration="30" data-track-index="17"></div>
+      <div class="vhs-glitch clip" data-start="0" data-duration="30" data-track-index="18" id="vhsGlitch"></div>
+      <div class="crt-vignette clip" data-start="0" data-duration="30" data-track-index="19"></div>
+      <div class="phosphor-glow clip" data-start="0" data-duration="30" data-track-index="20"></div>
+      <div class="static-flash clip" data-start="0" data-duration="30" data-track-index="21" id="staticFlash"></div>
+
+      <!-- HUD Corners -->
+      <div class="hud-corner tl clip" id="hudTL" data-start="0" data-duration="30" data-track-index="22"></div>
+      <div class="hud-corner tr clip" id="hudTR" data-start="0" data-duration="30" data-track-index="23"></div>
+      <div class="hud-corner bl clip" id="hudBL" data-start="0" data-duration="30" data-track-index="24"></div>
+      <div class="hud-corner br clip" id="hudBR" data-start="0" data-duration="30" data-track-index="25"></div>
+
+      <!-- Overlays -->
+      <div class="channel-badge clip" data-start="0" data-duration="30" data-track-index="26" id="channelBadge">CH 03</div>
+      <div class="rec-indicator clip" data-start="0" data-duration="30" data-track-index="27" id="recIndicator">
+        <div class="rec-dot" id="recDot"></div>
+        REC
+      </div>
+
+      <!-- Status bar -->
+      <div class="status-bar clip" data-start="0.5" data-duration="29" data-track-index="28" id="statusBar">
+        ◈ MINDEXPANDER NETWORK ◈ AUTONOMOUS STREAM ◈
+      </div>
+
+      <!-- Chat ticker -->
+      <div class="chat-ticker clip" data-start="1" data-duration="29" data-track-index="29" id="chatTicker">
+        <span class="chat-ticker-text" id="chatText">
+          Welcome to the Mind Expander stream... AI voice clone running live... Drop a message in chat and I'll talk about it...
+        </span>
+      </div>
+
+      <!-- Audio visualizer -->
+      <div class="audio-viz clip" data-start="0" data-duration="30" data-track-index="30" id="audioViz"></div>
+
+      <!-- Lower third -->
+      <div class="lower-third clip" data-start="1" data-duration="29" data-track-index="31" id="lowerThird">
+        MINDEXPANDER
+      </div>
+      <div class="lower-third-sub clip" data-start="1.5" data-duration="28.5" data-track-index="32" id="lowerThirdSub">
+        autonomous AI voice clone • live on stream
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Seeded PRNG (mulberry32) for deterministic renders ──
+    function mulberry32(a) {
+      return function() {
+        a |= 0; a = a + 0x6D2B79F5 | 0;
+        var t = Math.imul(a ^ a >>> 15, 1 | a);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+    const rng = mulberry32(42);
+
+    // ── Generate dust particles (deterministic) ──
+    const dustLayer = document.getElementById('dustLayer');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.style.cssText = `
+        position: absolute;
+        width: ${1 + rng() * 2}px;
+        height: ${1 + rng() * 2}px;
+        background: rgba(200, 180, 140, ${0.15 + rng() * 0.15});
+        border-radius: 50%;
+        left: ${rng() * 100}%;
+        top: ${rng() * 100}%;
+      `;
+      p.className = 'dust-particle';
+      dustLayer.appendChild(p);
+    }
+
+    // ── Generate audio viz bars ──
+    const audioViz = document.getElementById('audioViz');
+    for (let i = 0; i < 12; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'viz-bar';
+      bar.style.height = '4px';
+      audioViz.appendChild(bar);
+    }
+
+    // ── GSAP Timeline ──
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Entrance: room fades in
+    tl.from('.room-bg', { opacity: 0, duration: 2 }, 0);
+    tl.from('.neon-ambient', { opacity: 0, duration: 3 }, 0);
+
+    // TV frame slides in with a glitch
+    tl.from('.tv-frame', {
+      opacity: 0,
+      scale: 1.05,
+      filter: 'brightness(2) contrast(0.5)',
+      duration: 1.5,
+      ease: 'power3.out'
+    }, 0.5);
+
+    // Green screen fades in
+    tl.from('.greenscreen', {
+      opacity: 0,
+      duration: 1,
+      ease: 'power2.inOut'
+    }, 0.8);
+
+    // Neon border appears
+    tl.from('.neon-border', {
+      opacity: 0,
+      scale: 0.98,
+      duration: 2,
+      ease: 'power2.out'
+    }, 1);
+
+    // HUD corners animate in
+    tl.from('.hud-corner', {
+      opacity: 0,
+      scale: 0,
+      duration: 0.5,
+      stagger: 0.1,
+      ease: 'back.out(2)'
+    }, 1.5);
+
+    // Channel badge
+    tl.from('#channelBadge', {
+      opacity: 0,
+      x: 20,
+      duration: 0.8,
+      ease: 'power2.out'
+    }, 2);
+
+    // REC indicator
+    tl.from('#recIndicator', {
+      opacity: 0,
+      x: -20,
+      duration: 0.8,
+      ease: 'power2.out'
+    }, 2);
+
+    // Status bar types in
+    tl.from('#statusBar', {
+      opacity: 0,
+      y: -10,
+      duration: 1,
+      ease: 'power2.out'
+    }, 2.5);
+
+    // Lower third slides up
+    tl.from('#lowerThird', {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      ease: 'power3.out'
+    }, 3);
+
+    tl.from('#lowerThirdSub', {
+      opacity: 0,
+      y: 20,
+      duration: 0.8,
+      ease: 'power3.out'
+    }, 3.3);
+
+    // Chat ticker scrolls in
+    tl.from('#chatTicker', {
+      opacity: 0,
+      y: 10,
+      duration: 1,
+      ease: 'power2.out'
+    }, 3.5);
+
+    // ── Scan bar animation ──
+    tl.fromTo('#scanBar', {
+      top: '-12%'
+    }, {
+      top: '100%',
+      duration: 8,
+      ease: 'none',
+      repeat: 1
+    }, 0);
+
+    // ── VHS glitch flashes ──
+    const glitchTimes = [4, 8, 12, 15, 19, 23, 27];
+    glitchTimes.forEach(time => {
+      tl.set('#vhsGlitch', {
+        opacity: 1,
+        top: (15 + Math.sin(time * 3) * 30) + '%',
+        skewX: (Math.sin(time * 7) * 5) + 'deg'
+      }, time);
+      tl.set('#vhsGlitch', { opacity: 0 }, time + 0.15);
+    });
+
+    // ── Static flash ──
+    tl.set('#staticFlash', { opacity: 0.06 }, 10);
+    tl.set('#staticFlash', { opacity: 0 }, 10.08);
+    tl.set('#staticFlash', { opacity: 0.04 }, 20);
+    tl.set('#staticFlash', { opacity: 0 }, 20.06);
+
+    // ── Dust particles float ──
+    document.querySelectorAll('.dust-particle').forEach((p, i) => {
+      tl.to(p, {
+        y: -(50 + Math.sin(i) * 30),
+        x: Math.cos(i * 2) * 20,
+        opacity: 0,
+        duration: 6 + (i % 4) * 2,
+        ease: 'none',
+        repeat: 1
+      }, i * 0.5);
+    });
+
+    // ── REC dot blink ──
+    tl.to('#recDot', {
+      opacity: 0,
+      duration: 0.5,
+      repeat: 14,
+      yoyo: true,
+      ease: 'power1.inOut'
+    }, 0);
+
+    // ── Audio viz bars pulse ──
+    document.querySelectorAll('.viz-bar').forEach((bar, i) => {
+      tl.to(bar, {
+        height: (8 + Math.sin(i * 1.5) * 12) + 'px',
+        duration: 0.3 + (i % 3) * 0.15,
+        repeat: Math.floor(30 / 0.5) - 1,
+        yoyo: true,
+        ease: 'power1.inOut'
+      }, i * 0.05);
+    });
+
+    // ── Channel badge subtle pulse ──
+    tl.to('#channelBadge', {
+      opacity: 0.3,
+      duration: 2,
+      repeat: 6,
+      yoyo: true,
+      ease: 'sine.inOut'
+    }, 2);
+
+    // ── Chat ticker scroll ──
+    tl.to('#chatText', {
+      x: -800,
+      duration: 20,
+      ease: 'none',
+      repeat: 0
+    }, 3);
+
+    // Register the timeline
+    window.__timelines['cyberpunk-tv'] = tl;
+
+    // ── Public API for live control ──
+    window.CourageTV = {
+      setChannel(text) {
+        document.getElementById('channelBadge').textContent = text;
+      },
+      setRecording(on) {
+        document.getElementById('recIndicator').style.display = on ? 'flex' : 'none';
+      },
+      setChatText(text) {
+        document.getElementById('chatText').textContent = text;
+        gsap.set('#chatText', { x: 0 });
+      },
+      flash() {
+        gsap.fromTo('#staticFlash', { opacity: 0.08 }, { opacity: 0, duration: 0.2 });
+      },
+      glitch() {
+        const el = document.getElementById('vhsGlitch');
+        gsap.set(el, { opacity: 1, top: (Math.random() * 80 + 10) + '%' });
+        gsap.to(el, { opacity: 0, duration: 0.3, delay: 0.1 });
+      },
+      setLowerTitle(text) {
+        document.getElementById('lowerThird').textContent = text;
+      },
+      setLowerSub(text) {
+        document.getElementById('lowerThirdSub').textContent = text;
+      }
+    };
+
+    console.log('📺 Cyberpunk TV Overlay loaded. window.CourageTV API available.');
+  </script>
+</body>
+</html>
