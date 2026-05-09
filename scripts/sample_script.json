@@ -1,0 +1,52 @@
+[
+  {
+    "text": "Welcome to the Mind Expander Courage TV stream! We're about to get weird.",
+    "channel": "CH 03",
+    "pause_after": 1.0
+  },
+  {
+    "text": "This voice you're hearing? It's a clone. Trained on just sixty-six audio clips, running through VoxCPM2 with custom LoRA weights.",
+    "channel": "CH 03",
+    "pause_after": 1.0
+  },
+  {
+    "text": "The whole pipeline goes like this. You write a script, feed it to the model, and it generates speech in real-time. No pre-recording needed.",
+    "channel": "CH 07",
+    "pause_after": 0.8
+  },
+  {
+    "text": "We trained the voice on RunPod using a custom dataset called M1ND3XPAND3RS Voice. Then deployed the inference endpoint on Modal with an A100 eighty gigabyte GPU.",
+    "channel": "CH 03",
+    "pause_after": 1.0
+  },
+  {
+    "text": "The diffusion model runs ten steps with classifier-free guidance at two point zero. That gives us clean, natural speech at one point five times faster than real-time.",
+    "channel": "CH 12",
+    "pause_after": 0.8
+  },
+  {
+    "text": "And now we've got this sick Courage the Cowardly Dog TV overlay running in OBS. Scan lines, VHS glitches, dust particles, the whole vibe.",
+    "channel": "CH 03",
+    "pause_after": 1.0
+  },
+  {
+    "text": "The plan is to play public domain cartoons on the screen while I comment over them in real-time. Like MST3K but with an AI voice clone.",
+    "channel": "CH 07",
+    "pause_after": 0.8
+  },
+  {
+    "text": "Total cost to run this? About two bucks twenty-six cents per hour of generated audio. Well under the five dollar budget we set.",
+    "channel": "CH 03",
+    "pause_after": 1.0
+  },
+  {
+    "text": "Everything is open source. The fork, the LoRA training pipeline, the Modal endpoint, and now this stream overlay. All on GitHub under The Mind Expansion Network.",
+    "channel": "CH 12",
+    "pause_after": 0.8
+  },
+  {
+    "text": "This is what happens when you combine voice cloning, diffusion models, and a cartoon about a purple dog living in the middle of nowhere. Return the slab!",
+    "channel": "CH 03",
+    "pause_after": 1.5
+  }
+]
