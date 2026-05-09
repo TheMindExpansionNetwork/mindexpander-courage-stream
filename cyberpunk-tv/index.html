@@ -17,7 +17,6 @@
       font-family: 'Share Tech Mono', monospace;
     }
 
-    /* ── Full composition ── */
     .composition {
       position: relative;
       width: 1920px;
@@ -25,17 +24,16 @@
       overflow: hidden;
     }
 
-    /* ── Cyberpunk Room Background ── */
+    /* ── Room Background (dark cyberpunk hangout) ── */
     .room-bg {
       position: absolute;
       inset: 0;
+      z-index: 0;
       background:
         radial-gradient(ellipse at 50% 30%, rgba(20, 5, 40, 0.9) 0%, rgba(5, 2, 15, 1) 70%),
         linear-gradient(180deg, #0a0015 0%, #050010 50%, #020008 100%);
-      z-index: 0;
     }
 
-    /* Neon ambient light */
     .neon-ambient {
       position: absolute;
       inset: 0;
@@ -44,13 +42,6 @@
         radial-gradient(ellipse at 20% 80%, rgba(0, 255, 255, 0.05) 0%, transparent 40%),
         radial-gradient(ellipse at 80% 20%, rgba(255, 0, 128, 0.04) 0%, transparent 40%),
         radial-gradient(ellipse at 50% 100%, rgba(120, 0, 255, 0.06) 0%, transparent 30%);
-      animation: neonPulse 8s ease-in-out infinite alternate;
-    }
-
-    @keyframes neonPulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.7; }
     }
 
     /* ── TV Frame Image ── */
@@ -61,22 +52,51 @@
       background: url('assets/cyberpunk-tv-frame.png') center/cover no-repeat;
     }
 
-    /* ── Green Screen Area (for OBS chroma key) ── */
+    /* ── Screen Area (green screen + warm sunshine overlay) ── */
     .greenscreen {
       position: absolute;
-      /* These define the "window" of the TV screen within the frame */
-      /* Adjust these values based on where the green area is in the image */
       top: 12%;
       left: 18%;
       width: 64%;
       height: 68%;
       z-index: 5;
-      background: #00FF00;
-      /* Rounded CRT corners */
+      background: #00CC00;
       border-radius: 8px;
     }
 
-    /* ── Scan Lines Overlay ── */
+    /* Warm golden sunshine tint over the screen */
+    .sunshine-tint {
+      position: absolute;
+      top: 12%;
+      left: 18%;
+      width: 64%;
+      height: 68%;
+      z-index: 6;
+      border-radius: 8px;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 40% 30%, rgba(255, 180, 40, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 60%, rgba(255, 220, 100, 0.10) 0%, transparent 40%);
+    }
+
+    /* ── Screen bloom (light spilling into room - webcam effect) ── */
+    .screen-bloom {
+      position: absolute;
+      top: 8%;
+      left: 12%;
+      width: 76%;
+      height: 76%;
+      z-index: 4;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse at 50% 50%,
+        rgba(255, 180, 60, 0.06) 30%,
+        rgba(255, 140, 20, 0.03) 55%,
+        transparent 75%
+      );
+    }
+
+    /* ── Scan Lines ── */
     .scanlines {
       position: absolute;
       inset: 0;
@@ -86,8 +106,8 @@
         0deg,
         transparent,
         transparent 1px,
-        rgba(0, 0, 0, 0.12) 1px,
-        rgba(0, 0, 0, 0.12) 2px
+        rgba(0, 0, 0, 0.10) 1px,
+        rgba(0, 0, 0, 0.10) 2px
       );
       mix-blend-mode: multiply;
     }
@@ -97,15 +117,15 @@
       position: absolute;
       left: 18%;
       width: 64%;
-      height: 12%;
+      height: 10%;
       z-index: 25;
       pointer-events: none;
       background: linear-gradient(
         180deg,
         transparent 0%,
-        rgba(100, 200, 255, 0.04) 30%,
-        rgba(100, 200, 255, 0.08) 50%,
-        rgba(100, 200, 255, 0.04) 70%,
+        rgba(100, 200, 255, 0.03) 30%,
+        rgba(100, 200, 255, 0.06) 50%,
+        rgba(100, 200, 255, 0.03) 70%,
         transparent 100%
       );
     }
@@ -116,7 +136,7 @@
       inset: 0;
       z-index: 30;
       pointer-events: none;
-      opacity: 0.03;
+      opacity: 0.025;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
 
@@ -125,10 +145,10 @@
       position: absolute;
       left: 18%;
       width: 64%;
-      height: 3px;
+      height: 4px;
       z-index: 35;
       pointer-events: none;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.12);
       opacity: 0;
     }
 
@@ -141,8 +161,8 @@
       background: radial-gradient(
         ellipse at 50% 50%,
         transparent 55%,
-        rgba(0, 0, 0, 0.3) 80%,
-        rgba(0, 0, 0, 0.6) 100%
+        rgba(0, 0, 0, 0.25) 80%,
+        rgba(0, 0, 0, 0.55) 100%
       );
     }
 
@@ -157,8 +177,8 @@
       pointer-events: none;
       border-radius: 8px;
       box-shadow:
-        inset 0 0 40px rgba(100, 255, 100, 0.03),
-        inset 0 0 80px rgba(100, 255, 100, 0.02);
+        inset 0 0 40px rgba(100, 255, 100, 0.02),
+        inset 0 0 80px rgba(100, 255, 100, 0.01);
     }
 
     /* ── Static Flash ── */
@@ -171,17 +191,30 @@
       opacity: 0;
     }
 
+    /* ── Webcam OSD (timestamp overlay like a security cam) ── */
+    .webcam-osd {
+      position: absolute;
+      bottom: 24%;
+      right: 22%;
+      z-index: 60;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: rgba(200, 200, 200, 0.55);
+      text-shadow: 0 0 4px rgba(0,0,0,0.7);
+      letter-spacing: 2px;
+    }
+
     /* ── Channel Badge ── */
     .channel-badge {
       position: absolute;
       top: 16%;
       right: 22%;
       z-index: 50;
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.5);
       font-family: 'Orbitron', sans-serif;
       font-size: 18px;
       font-weight: 700;
-      text-shadow: 0 0 10px rgba(0, 200, 255, 0.5), 2px 2px 4px rgba(0,0,0,0.8);
+      text-shadow: 0 0 10px rgba(0, 200, 255, 0.4), 2px 2px 4px rgba(0,0,0,0.8);
       letter-spacing: 3px;
     }
 
@@ -196,9 +229,9 @@
       gap: 8px;
       font-family: 'Orbitron', sans-serif;
       font-size: 16px;
-      color: rgba(255, 60, 60, 0.9);
+      color: rgba(255, 60, 60, 0.85);
       font-weight: 700;
-      text-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+      text-shadow: 0 0 12px rgba(255, 0, 0, 0.5);
     }
 
     .rec-dot {
@@ -206,10 +239,10 @@
       height: 12px;
       background: #ff3333;
       border-radius: 50%;
-      box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
     }
 
-    /* ── Chat Ticker (bottom of screen) ── */
+    /* ── Chat Ticker ── */
     .chat-ticker {
       position: absolute;
       bottom: 15%;
@@ -218,8 +251,8 @@
       z-index: 55;
       font-family: 'Share Tech Mono', monospace;
       font-size: 16px;
-      color: rgba(200, 255, 200, 0.7);
-      text-shadow: 0 0 8px rgba(0, 255, 100, 0.3);
+      color: rgba(200, 255, 200, 0.6);
+      text-shadow: 0 0 8px rgba(0, 255, 100, 0.25);
       overflow: hidden;
       white-space: nowrap;
     }
@@ -228,7 +261,7 @@
       display: inline-block;
     }
 
-    /* ── Lower Third Title ── */
+    /* ── Lower Third ── */
     .lower-third {
       position: absolute;
       bottom: 8%;
@@ -237,10 +270,10 @@
       font-family: 'Orbitron', sans-serif;
       font-weight: 900;
       font-size: 28px;
-      color: #00ffff;
+      color: #ffb830;
       text-shadow:
-        0 0 20px rgba(0, 255, 255, 0.6),
-        0 0 40px rgba(0, 255, 255, 0.3),
+        0 0 20px rgba(255, 180, 40, 0.6),
+        0 0 40px rgba(255, 140, 20, 0.3),
         3px 3px 6px rgba(0, 0, 0, 0.8);
       letter-spacing: 4px;
       text-transform: uppercase;
@@ -252,9 +285,9 @@
       left: 22%;
       z-index: 60;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 16px;
-      color: rgba(255, 0, 128, 0.8);
-      text-shadow: 0 0 10px rgba(255, 0, 128, 0.4);
+      font-size: 15px;
+      color: rgba(255, 200, 100, 0.7);
+      text-shadow: 0 0 8px rgba(255, 150, 30, 0.3);
       letter-spacing: 2px;
     }
 
@@ -272,12 +305,12 @@
 
     .viz-bar {
       width: 4px;
-      background: rgba(0, 255, 200, 0.5);
+      background: rgba(255, 180, 40, 0.5);
       border-radius: 2px;
-      box-shadow: 0 0 6px rgba(0, 255, 200, 0.3);
+      box-shadow: 0 0 6px rgba(255, 180, 40, 0.3);
     }
 
-    /* ── Neon Border Glow (around screen) ── */
+    /* ── Neon Border Glow ── */
     .neon-border {
       position: absolute;
       top: 11.5%;
@@ -289,14 +322,8 @@
       border: 2px solid transparent;
       border-radius: 10px;
       box-shadow:
-        0 0 15px rgba(0, 255, 255, 0.15),
-        inset 0 0 15px rgba(0, 255, 255, 0.1);
-      animation: neonBorderPulse 4s ease-in-out infinite alternate;
-    }
-
-    @keyframes neonBorderPulse {
-      0% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.1), inset 0 0 10px rgba(0, 255, 255, 0.05); }
-      100% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.25), inset 0 0 20px rgba(0, 255, 255, 0.15); }
+        0 0 15px rgba(0, 255, 255, 0.12),
+        inset 0 0 15px rgba(0, 255, 255, 0.08);
     }
 
     /* ── Dust Particles ── */
@@ -307,14 +334,14 @@
       pointer-events: none;
     }
 
-    /* ── Cyberpunk HUD Corners ── */
+    /* ── HUD Corners ── */
     .hud-corner {
       position: absolute;
       z-index: 65;
       pointer-events: none;
       width: 40px;
       height: 40px;
-      border-color: rgba(0, 255, 255, 0.3);
+      border-color: rgba(0, 255, 255, 0.25);
       border-style: solid;
     }
 
@@ -323,7 +350,7 @@
     .hud-corner.bl { bottom: 12%; left: 17%; border-width: 0 0 2px 2px; }
     .hud-corner.br { bottom: 12%; right: 17%; border-width: 0 2px 2px 0; }
 
-    /* ── Status Text ── */
+    /* ── Status Bar ── */
     .status-bar {
       position: absolute;
       top: 5%;
@@ -332,82 +359,140 @@
       z-index: 70;
       font-family: 'Share Tech Mono', monospace;
       font-size: 12px;
-      color: rgba(0, 255, 255, 0.4);
+      color: rgba(0, 255, 255, 0.35);
       letter-spacing: 6px;
       text-transform: uppercase;
+    }
+
+    /* ── Webcam Handheld Shake Container ── */
+    .cam-shake {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    /* ── Lens dirt / webcam smudge ── */
+    .lens-smudge {
+      position: absolute;
+      inset: 0;
+      z-index: 41;
+      pointer-events: none;
+      opacity: 0.03;
+      background: radial-gradient(
+        ellipse at 30% 40%,
+        rgba(180, 160, 140, 0.5) 0%,
+        transparent 25%
+      );
+    }
+
+    /* ── Webcam grain ── */
+    .webcam-grain {
+      position: absolute;
+      inset: 0;
+      z-index: 42;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
     }
   </style>
 </head>
 <body>
   <div
     id="root"
-    data-composition-id="cyberpunk-tv"
+    data-composition-id="sunshine-render"
     data-start="0"
-    data-duration="30"
+    data-duration="92"
     data-width="1920"
     data-height="1080"
   >
     <div class="composition" id="scene">
-      <!-- Background layers -->
-      <div class="room-bg"></div>
-      <div class="neon-ambient clip" data-start="0" data-duration="30" data-track-index="0"></div>
-      <div class="dust-layer" id="dustLayer"></div>
+      <!-- Cam shake wrapper for handheld webcam feel -->
+      <div class="cam-shake" id="camShake">
+        <!-- Background -->
+        <div class="room-bg"></div>
+        <div class="neon-ambient clip" data-start="0" data-duration="92" data-track-index="0"></div>
+        <div class="dust-layer" id="dustLayer"></div>
 
-      <!-- Neon border glow -->
-      <div class="neon-border clip" data-start="0" data-duration="30" data-track-index="1"></div>
+        <!-- Screen bloom (light from TV spilling into room) -->
+        <div class="screen-bloom clip" data-start="0" data-duration="92" data-track-index="1"></div>
 
-      <!-- Green screen area (OBS chroma key target) -->
-      <div class="greenscreen clip" data-start="0" data-duration="30" data-track-index="2"></div>
+        <!-- Neon border glow -->
+        <div class="neon-border clip" data-start="0" data-duration="92" data-track-index="2"></div>
 
-      <!-- TV Frame over everything -->
-      <div class="tv-frame clip" data-start="0" data-duration="30" data-track-index="10"></div>
+        <!-- Green screen area -->
+        <div class="greenscreen clip" data-start="0" data-duration="92" data-track-index="3"></div>
 
-      <!-- CRT Effects -->
-      <div class="scanlines clip" data-start="0" data-duration="30" data-track-index="15"></div>
-      <div class="scan-bar clip" data-start="0" data-duration="30" data-track-index="16" id="scanBar"></div>
-      <div class="vhs-noise clip" data-start="0" data-duration="30" data-track-index="17"></div>
-      <div class="vhs-glitch clip" data-start="0" data-duration="30" data-track-index="18" id="vhsGlitch"></div>
-      <div class="crt-vignette clip" data-start="0" data-duration="30" data-track-index="19"></div>
-      <div class="phosphor-glow clip" data-start="0" data-duration="30" data-track-index="20"></div>
-      <div class="static-flash clip" data-start="0" data-duration="30" data-track-index="21" id="staticFlash"></div>
+        <!-- Warm sunshine tint -->
+        <div class="sunshine-tint clip" data-start="0" data-duration="92" data-track-index="4"></div>
 
-      <!-- HUD Corners -->
-      <div class="hud-corner tl clip" id="hudTL" data-start="0" data-duration="30" data-track-index="22"></div>
-      <div class="hud-corner tr clip" id="hudTR" data-start="0" data-duration="30" data-track-index="23"></div>
-      <div class="hud-corner bl clip" id="hudBL" data-start="0" data-duration="30" data-track-index="24"></div>
-      <div class="hud-corner br clip" id="hudBR" data-start="0" data-duration="30" data-track-index="25"></div>
+        <!-- TV Frame -->
+        <div class="tv-frame clip" data-start="0" data-duration="92" data-track-index="10"></div>
 
-      <!-- Overlays -->
-      <div class="channel-badge clip" data-start="0" data-duration="30" data-track-index="26" id="channelBadge">CH 03</div>
-      <div class="rec-indicator clip" data-start="0" data-duration="30" data-track-index="27" id="recIndicator">
-        <div class="rec-dot" id="recDot"></div>
-        REC
-      </div>
+        <!-- CRT Effects -->
+        <div class="scanlines clip" data-start="0" data-duration="92" data-track-index="15"></div>
+        <div class="scan-bar clip" data-start="0" data-duration="92" data-track-index="16" id="scanBar"></div>
+        <div class="vhs-noise clip" data-start="0" data-duration="92" data-track-index="17"></div>
+        <div class="vhs-glitch clip" data-start="0" data-duration="92" data-track-index="18" id="vhsGlitch"></div>
+        <div class="crt-vignette clip" data-start="0" data-duration="92" data-track-index="19"></div>
+        <div class="phosphor-glow clip" data-start="0" data-duration="92" data-track-index="20"></div>
+        <div class="static-flash clip" data-start="0" data-duration="92" data-track-index="21" id="staticFlash"></div>
 
-      <!-- Status bar -->
-      <div class="status-bar clip" data-start="0.5" data-duration="29" data-track-index="28" id="statusBar">
-        ◈ MINDEXPANDER NETWORK ◈ AUTONOMOUS STREAM ◈
-      </div>
+        <!-- Webcam-style effects -->
+        <div class="lens-smudge clip" data-start="0" data-duration="92" data-track-index="22"></div>
+        <div class="webcam-grain clip" data-start="0" data-duration="92" data-track-index="23"></div>
 
-      <!-- Chat ticker -->
-      <div class="chat-ticker clip" data-start="1" data-duration="29" data-track-index="29" id="chatTicker">
-        <span class="chat-ticker-text" id="chatText">
-          Welcome to the Mind Expander stream... AI voice clone running live... Drop a message in chat and I'll talk about it...
-        </span>
-      </div>
+        <!-- HUD Corners -->
+        <div class="hud-corner tl clip" id="hudTL" data-start="0" data-duration="92" data-track-index="24"></div>
+        <div class="hud-corner tr clip" id="hudTR" data-start="0" data-duration="92" data-track-index="25"></div>
+        <div class="hud-corner bl clip" id="hudBL" data-start="0" data-duration="92" data-track-index="26"></div>
+        <div class="hud-corner br clip" id="hudBR" data-start="0" data-duration="92" data-track-index="27"></div>
 
-      <!-- Audio visualizer -->
-      <div class="audio-viz clip" data-start="0" data-duration="30" data-track-index="30" id="audioViz"></div>
+        <!-- Overlays -->
+        <div class="channel-badge clip" data-start="0" data-duration="92" data-track-index="28" id="channelBadge">CH 04</div>
+        <div class="rec-indicator clip" data-start="0" data-duration="92" data-track-index="29" id="recIndicator">
+          <div class="rec-dot" id="recDot"></div>
+          REC
+        </div>
 
-      <!-- Lower third -->
-      <div class="lower-third clip" data-start="1" data-duration="29" data-track-index="31" id="lowerThird">
-        MINDEXPANDER
-      </div>
-      <div class="lower-third-sub clip" data-start="1.5" data-duration="28.5" data-track-index="32" id="lowerThirdSub">
-        autonomous AI voice clone • live on stream
-      </div>
+        <!-- Webcam OSD timestamp -->
+        <div class="webcam-osd clip" data-start="0" data-duration="92" data-track-index="30" id="webcamOsd">
+          REC 03:47 AM
+        </div>
+
+        <!-- Status bar -->
+        <div class="status-bar clip" data-start="0.5" data-duration="91" data-track-index="31" id="statusBar">
+          ◈ MINDEXPANDER NETWORK ◈ LATE NIGHT STREAM ◈
+        </div>
+
+        <!-- Chat ticker -->
+        <div class="chat-ticker clip" data-start="1" data-duration="91" data-track-index="32" id="chatTicker">
+          <span class="chat-ticker-text" id="chatText">
+            yo this cartoon is wild   whats this from?   lol the milk propaganda   i cant sleep   🔥🔥   put sunshine makers on   this is cursed   vintage weirdness   late night vibes   i love this   🌅
+          </span>
+        </div>
+
+        <!-- Audio visualizer -->
+        <div class="audio-viz clip" data-start="0" data-duration="92" data-track-index="33" id="audioViz"></div>
+
+        <!-- Lower third - Sunshine Makers -->
+        <div class="lower-third clip" data-start="1.5" data-duration="90" data-track-index="34" id="lowerThird">
+          THE SUNSHINE MAKERS
+        </div>
+        <div class="lower-third-sub clip" data-start="2" data-duration="89.5" data-track-index="35" id="lowerThirdSub">
+          1935 • Borden Milk propaganda
+        </div>
+      </div><!-- end cam-shake -->
     </div>
   </div>
+
+  <!-- Audio element (separate per HyperFrames rules) -->
+  <audio
+    id="rambleAudio"
+    src="assets/ramble.wav"
+    data-start="0"
+    data-duration="92"
+    data-track-index="99"
+  ></audio>
 
   <script>
     // ── Seeded PRNG (mulberry32) for deterministic renders ──
@@ -419,28 +504,29 @@
         return ((t ^ t >>> 14) >>> 0) / 4294967296;
       };
     }
-    const rng = mulberry32(42);
+    const rng = mulberry32(77);
 
-    // ── Generate dust particles (deterministic) ──
+    // ── Generate dust particles ──
     const dustLayer = document.getElementById('dustLayer');
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 30; i++) {
       const p = document.createElement('div');
-      p.style.cssText = `
-        position: absolute;
-        width: ${1 + rng() * 2}px;
-        height: ${1 + rng() * 2}px;
-        background: rgba(200, 180, 140, ${0.15 + rng() * 0.15});
-        border-radius: 50%;
-        left: ${rng() * 100}%;
-        top: ${rng() * 100}%;
-      `;
+      p.style.cssText = [
+        'position: absolute',
+        `width: ${1 + rng() * 2}px`,
+        `height: ${1 + rng() * 2}px`,
+        `background: rgba(200, 180, 140, ${0.12 + rng() * 0.12})`,
+        'border-radius: 50%',
+        `left: ${rng() * 100}%`,
+        `top: ${rng() * 100}%`
+      ].join(';');
       p.className = 'dust-particle';
+      p.setAttribute('data-dust-idx', i);
       dustLayer.appendChild(p);
     }
 
     // ── Generate audio viz bars ──
     const audioViz = document.getElementById('audioViz');
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 14; i++) {
       const bar = document.createElement('div');
       bar.className = 'viz-bar';
       bar.style.height = '4px';
@@ -450,12 +536,15 @@
     // ── GSAP Timeline ──
     window.__timelines = window.__timelines || {};
     const tl = gsap.timeline({ paused: true });
+    const DUR = 92;
+    const rng2 = mulberry32(123);
 
-    // Entrance: room fades in
-    tl.from('.room-bg', { opacity: 0, duration: 2 }, 0);
+    // === Entrance ===
+    // Room fades in
+    tl.from('.room-bg', { opacity: 0, duration: 2.5 }, 0);
     tl.from('.neon-ambient', { opacity: 0, duration: 3 }, 0);
 
-    // TV frame slides in with a glitch
+    // TV frame glitches in
     tl.from('.tv-frame', {
       opacity: 0,
       scale: 1.05,
@@ -471,6 +560,20 @@
       ease: 'power2.inOut'
     }, 0.8);
 
+    // Sunshine tint warms up
+    tl.from('.sunshine-tint', {
+      opacity: 0,
+      duration: 2.5,
+      ease: 'power2.inOut'
+    }, 1);
+
+    // Screen bloom comes in
+    tl.from('.screen-bloom', {
+      opacity: 0,
+      duration: 3,
+      ease: 'power2.out'
+    }, 0.5);
+
     // Neon border appears
     tl.from('.neon-border', {
       opacity: 0,
@@ -479,7 +582,7 @@
       ease: 'power2.out'
     }, 1);
 
-    // HUD corners animate in
+    // HUD corners
     tl.from('.hud-corner', {
       opacity: 0,
       scale: 0,
@@ -504,7 +607,14 @@
       ease: 'power2.out'
     }, 2);
 
-    // Status bar types in
+    // Webcam OSD
+    tl.from('#webcamOsd', {
+      opacity: 0,
+      duration: 1,
+      ease: 'power2.out'
+    }, 2.5);
+
+    // Status bar
     tl.from('#statusBar', {
       opacity: 0,
       y: -10,
@@ -512,7 +622,7 @@
       ease: 'power2.out'
     }, 2.5);
 
-    // Lower third slides up
+    // Lower third
     tl.from('#lowerThird', {
       opacity: 0,
       y: 30,
@@ -527,7 +637,7 @@
       ease: 'power3.out'
     }, 3.3);
 
-    // Chat ticker scrolls in
+    // Chat ticker
     tl.from('#chatTicker', {
       opacity: 0,
       y: 10,
@@ -535,114 +645,149 @@
       ease: 'power2.out'
     }, 3.5);
 
-    // ── Scan bar animation ──
+    // === Scan bar (continuous) ===
+    const scanDuration = 8;
+    const scanRepeats = Math.floor(DUR / scanDuration);
     tl.fromTo('#scanBar', {
       top: '-12%'
     }, {
       top: '100%',
-      duration: 8,
+      duration: scanDuration,
       ease: 'none',
-      repeat: 1
+      repeat: scanRepeats - 1
     }, 0);
 
-    // ── VHS glitch flashes ──
-    const glitchTimes = [4, 8, 12, 15, 19, 23, 27];
+    // === VHS glitch flashes (scattered through duration) ===
+    const glitchTimes = [];
+    for (let t = 4; t < DUR - 2; t += 5 + Math.floor(rng2() * 4)) {
+      glitchTimes.push(t);
+    }
     glitchTimes.forEach(time => {
+      if (time >= DUR) return;
       tl.set('#vhsGlitch', {
         opacity: 1,
-        top: (15 + Math.sin(time * 3) * 30) + '%',
-        skewX: (Math.sin(time * 7) * 5) + 'deg'
+        top: (15 + rng2() * 50) + '%',
+        skewX: (rng2() * 10 - 5) + 'deg'
       }, time);
       tl.set('#vhsGlitch', { opacity: 0 }, time + 0.15);
     });
 
-    // ── Static flash ──
-    tl.set('#staticFlash', { opacity: 0.06 }, 10);
-    tl.set('#staticFlash', { opacity: 0 }, 10.08);
-    tl.set('#staticFlash', { opacity: 0.04 }, 20);
-    tl.set('#staticFlash', { opacity: 0 }, 20.06);
+    // === Static flashes ===
+    for (let t = 10; t < DUR - 1; t += 12 + Math.floor(rng2() * 6)) {
+      if (t >= DUR) break;
+      tl.set('#staticFlash', { opacity: 0.05 + rng2() * 0.03 }, t);
+      tl.set('#staticFlash', { opacity: 0 }, t + 0.08);
+    }
 
-    // ── Dust particles float ──
+    // === Dust particles float ===
     document.querySelectorAll('.dust-particle').forEach((p, i) => {
       tl.to(p, {
-        y: -(50 + Math.sin(i) * 30),
-        x: Math.cos(i * 2) * 20,
+        y: -(40 + rng2() * 40),
+        x: (rng2() * 30 - 15),
         opacity: 0,
-        duration: 6 + (i % 4) * 2,
+        duration: 8 + (i % 5) * 3,
         ease: 'none',
-        repeat: 1
-      }, i * 0.5);
+        repeat: Math.floor(DUR / (8 + (i % 5) * 3)) - 1
+      }, i * 0.3);
     });
 
-    // ── REC dot blink ──
+    // === REC dot blink ===
     tl.to('#recDot', {
       opacity: 0,
       duration: 0.5,
-      repeat: 14,
+      repeat: Math.floor(DUR / 1) - 1,
       yoyo: true,
       ease: 'power1.inOut'
     }, 0);
 
-    // ── Audio viz bars pulse ──
+    // === Audio viz bars pulse ===
     document.querySelectorAll('.viz-bar').forEach((bar, i) => {
       tl.to(bar, {
-        height: (8 + Math.sin(i * 1.5) * 12) + 'px',
-        duration: 0.3 + (i % 3) * 0.15,
-        repeat: Math.floor(30 / 0.5) - 1,
+        height: (8 + rng2() * 16) + 'px',
+        duration: 0.3 + (i % 4) * 0.12,
+        repeat: Math.floor(DUR / 0.5) - 1,
         yoyo: true,
         ease: 'power1.inOut'
-      }, i * 0.05);
+      }, i * 0.04);
     });
 
-    // ── Channel badge subtle pulse ──
+    // === Channel badge subtle pulse ===
     tl.to('#channelBadge', {
-      opacity: 0.3,
+      opacity: 0.25,
       duration: 2,
-      repeat: 6,
+      repeat: Math.floor(DUR / 4) - 1,
       yoyo: true,
       ease: 'sine.inOut'
     }, 2);
 
-    // ── Chat ticker scroll ──
+    // === Chat ticker scroll ===
     tl.to('#chatText', {
-      x: -800,
-      duration: 20,
+      x: -900,
+      duration: 25,
       ease: 'none',
-      repeat: 0
+      repeat: Math.floor(DUR / 25) - 1
     }, 3);
 
+    // === Webcam OSD flicker ===
+    tl.to('#webcamOsd', {
+      opacity: 0.35,
+      duration: 0.8,
+      repeat: Math.floor(DUR / 1.6) - 1,
+      yoyo: true,
+      ease: 'power1.inOut'
+    }, 0);
+
+    // === Sunshine tint warmth pulsing ===
+    tl.to('.sunshine-tint', {
+      opacity: 0.7,
+      duration: 6,
+      repeat: Math.floor(DUR / 12) - 1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    }, 2);
+
+    // === Screen bloom breathing ===
+    tl.to('.screen-bloom', {
+      opacity: 0.7,
+      duration: 5,
+      repeat: Math.floor(DUR / 10) - 1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    }, 1);
+
+    // === Handheld camera shake (subtle webcam wobble) ===
+    tl.to('#camShake', {
+      x: 3,
+      y: -2,
+      rotation: 0.15,
+      duration: 4,
+      ease: 'sine.inOut',
+      repeat: Math.floor(DUR / 8) - 1,
+      yoyo: true
+    }, 0);
+    tl.to('#camShake', {
+      x: -2,
+      y: 1,
+      rotation: -0.1,
+      duration: 5,
+      ease: 'sine.inOut',
+      repeat: Math.floor(DUR / 10) - 1,
+      yoyo: true
+    }, 0.5);
+
+    // === Neon border pulse ===
+    tl.to('.neon-border', {
+      boxShadow: '0 0 25px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.12)',
+      duration: 4,
+      repeat: Math.floor(DUR / 8) - 1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    }, 0);
+
     // Register the timeline
-    window.__timelines['cyberpunk-tv'] = tl;
+    window.__timelines['sunshine-render'] = tl;
 
-    // ── Public API for live control ──
-    window.CourageTV = {
-      setChannel(text) {
-        document.getElementById('channelBadge').textContent = text;
-      },
-      setRecording(on) {
-        document.getElementById('recIndicator').style.display = on ? 'flex' : 'none';
-      },
-      setChatText(text) {
-        document.getElementById('chatText').textContent = text;
-        gsap.set('#chatText', { x: 0 });
-      },
-      flash() {
-        gsap.fromTo('#staticFlash', { opacity: 0.08 }, { opacity: 0, duration: 0.2 });
-      },
-      glitch() {
-        const el = document.getElementById('vhsGlitch');
-        gsap.set(el, { opacity: 1, top: (Math.random() * 80 + 10) + '%' });
-        gsap.to(el, { opacity: 0, duration: 0.3, delay: 0.1 });
-      },
-      setLowerTitle(text) {
-        document.getElementById('lowerThird').textContent = text;
-      },
-      setLowerSub(text) {
-        document.getElementById('lowerThirdSub').textContent = text;
-      }
-    };
-
-    console.log('📺 Cyberpunk TV Overlay loaded. window.CourageTV API available.');
+    console.log('🌅 Sunshine Makers render composition loaded. Duration:', DUR, 'seconds.');
   </script>
 </body>
 </html>
