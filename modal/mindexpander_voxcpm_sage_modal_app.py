@@ -3,7 +3,7 @@ VoxCPM2 MindExpander — SageAttention-accelerated endpoint on Modal.
 
 Replaces torch.nn.functional.scaled_dot_product_attention with SageAttention
 to speed up the MiniCPM-4 LLM backbone inside VoxCPM2. SageAttention 2.x
-supports A100/H100/RTX-PRO-6000-class GPUs; SageAttention 1.x is for consumer
+supports A10G/A100/H100-class GPUs; SageAttention 1.x is for consumer
 cards (RTX4090/RTX3090).
 
 Usage:
@@ -143,8 +143,8 @@ def _build_gpu_image():
             "accelerate",
             extra_index_url="https://download.pytorch.org/whl/cu121",
         )
-        # SageAttention (2.x for A100/H100/RTX-PRO, 1.x for consumer cards)
-        # Try 2.x first since our GPU is RTX-PRO-6000 (datacenter-class)
+        # SageAttention (2.x for A100/H100/A10G, 1.x for consumer cards)
+        # Try 2.x first since our GPU is A10G (datacenter-class Ampere)
         .pip_install(
             "triton>=2.3.0",
             "sageattention",
@@ -289,7 +289,7 @@ def api():
 
 @app.cls(
     image=gpu_image,
-    gpu="RTX-PRO-6000",
+    gpu="A100-80GB",
     timeout=600,
     scaledown_window=120,
     min_containers=0,
@@ -495,7 +495,7 @@ class VoxCPMSageRunner:
 
 @app.function(
     image=gpu_image,
-    gpu="RTX-PRO-6000",
+    gpu="A100-80GB",
     timeout=600,
     scaledown_window=120,
     min_containers=0,
@@ -523,7 +523,7 @@ def generate_audio(
 
 @app.function(
     image=gpu_image,
-    gpu="RTX-PRO-6000",
+    gpu="A100-80GB",
     timeout=600,
     volumes={
         f"/cache/{LORA_VOLUME}": modal.Volume.from_name(LORA_VOLUME, create_if_missing=True),
