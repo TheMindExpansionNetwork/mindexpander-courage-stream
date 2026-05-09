@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>Sunshine Makers Stream Scene</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* ── The TV Set (foreground frame) ── */
+  .tv-container {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  /* Top bezel */
+  .bezel-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(180deg, #1a1510 0%, #2a2018 60%, transparent 100%);
+  }
+
+  /* Bottom bezel with label */
+  .bezel-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 100px;
+    background: linear-gradient(0deg, #1a1510 0%, #2a2018 60%, transparent 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tv-label {
+    color: rgba(150, 130, 100, 0.3);
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+  }
+
+  /* Left bezel */
+  .bezel-left {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 120px;
+    background: linear-gradient(90deg, #1a1510 0%, #2a2018 60%, transparent 100%);
+  }
+
+  /* Right bezel */
+  .bezel-right {
+    position: absolute;
+    top: 0; bottom: 0; right: 0;
+    width: 120px;
+    background: linear-gradient(270deg, #1a1510 0%, #2a2018 60%, transparent 100%);
+  }
+
+  /* Wood grain on bezels */
+  .bezel-top::after, .bezel-bottom::after,
+  .bezel-left::after, .bezel-right::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      85deg,
+      transparent,
+      transparent 8px,
+      rgba(60, 40, 20, 0.12) 8px,
+      rgba(60, 40, 20, 0.12) 9px
+    );
+  }
+
+  /* ── Scan Lines (over everything) ── */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.08) 1px,
+      rgba(0, 0, 0, 0.08) 2px
+    );
+  }
+
+  /* ── Rolling Scan Bar ── */
+  .scan-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 12%;
+    z-index: 210;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(255, 200, 50, 0.02) 30%,
+      rgba(255, 200, 50, 0.05) 50%,
+      rgba(255, 200, 50, 0.02) 70%,
+      transparent 100%
+    );
+    animation: scanRoll 8s linear infinite;
+  }
+
+  @keyframes scanRoll {
+    0% { top: -12%; }
+    100% { top: 100%; }
+  }
+
+  /* ── VHS Glitch ── */
+  .vhs-glitch {
+    position: fixed;
+    left: 0; right: 0;
+    height: 3px;
+    z-index: 220;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.12);
+    opacity: 0;
+    animation: glitch 15s ease-in-out infinite;
+  }
+
+  @keyframes glitch {
+    0%, 93%, 100% { opacity: 0; }
+    94% { opacity: 1; top: 25%; transform: skewX(4deg); }
+    95% { opacity: 0.5; top: 65%; transform: skewX(-3deg); }
+    96% { opacity: 1; top: 45%; transform: skewX(2deg); }
+    97% { opacity: 0; }
+  }
+
+  /* ── CRT Vignette ── */
+  .vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    pointer-events: none;
+    box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ── Sunshine glow (warm tint for this cartoon) ── */
+  .sunshine-glow {
+    position: fixed;
+    inset: 0;
+    z-index: 195;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      rgba(255, 200, 50, 0.02) 0%,
+      transparent 60%
+    );
+    animation: glowPulse 6s ease-in-out infinite alternate;
+  }
+
+  @keyframes glowPulse {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+  /* ── HUD: Channel Badge ── */
+  .channel-badge {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    z-index: 300;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255, 200, 50, 0.6);
+    text-shadow: 0 0 10px rgba(255, 200, 50, 0.3), 2px 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 3px;
+  }
+
+  /* ── HUD: REC ── */
+  .rec-indicator {
+    position: fixed;
+    top: 20px;
+    left: 30px;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 60, 60, 0.9);
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+
+  .rec-dot {
+    width: 10px;
+    height: 10px;
+    background: #ff3333;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    animation: recBlink 1.5s ease-in-out infinite;
+  }
+
+  @keyframes recBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ── Chat Ticker ── */
+  .chat-ticker {
+    position: fixed;
+    bottom: 25px;
+    left: 140px;
+    right: 140px;
+    z-index: 300;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 15px;
+    color: rgba(255, 220, 100, 0.7);
+    text-shadow: 0 0 8px rgba(255, 200, 50, 0.3), 1px 1px 3px rgba(0,0,0,0.9);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .chat-text {
+    display: inline-block;
+  }
+
+  /* ── Lower Third ── */
+  .lower-third {
+    position: fixed;
+    bottom: 50px;
+    left: 140px;
+    z-index: 300;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    color: #ffd700;
+    text-shadow:
+      0 0 15px rgba(255, 215, 0, 0.5),
+      0 0 30px rgba(255, 215, 0, 0.2),
+      2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 3px;
+  }
+
+  .lower-third-sub {
+    position: fixed;
+    bottom: 30px;
+    left: 140px;
+    z-index: 300;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: rgba(255, 150, 50, 0.7);
+    text-shadow: 0 0 8px rgba(255, 150, 50, 0.3);
+    letter-spacing: 2px;
+  }
+
+  /* ── Audio Viz ── */
+  .audio-viz {
+    position: fixed;
+    bottom: 28px;
+    right: 140px;
+    z-index: 300;
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 18px;
+  }
+
+  .viz-bar {
+    width: 3px;
+    background: rgba(255, 200, 50, 0.4);
+    border-radius: 1px;
+    box-shadow: 0 0 4px rgba(255, 200, 50, 0.2);
+    animation: vizPulse ease-in-out infinite;
+  }
+
+  @keyframes vizPulse {
+    0%, 100% { height: 3px; }
+    50% { height: 14px; }
+  }
+
+  /* ── Now Playing ── */
+  .now-playing {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: rgba(255, 200, 50, 0.35);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<!-- TV Bezel Frame -->
+<div class="tv-container">
+  <div class="bezel-top"></div>
+  <div class="bezel-bottom">
+    <span class="tv-label">mindexpander sunshine tv</span>
+  </div>
+  <div class="bezel-left"></div>
+  <div class="bezel-right"></div>
+</div>
+
+<!-- CRT Effects -->
+<div class="scanlines"></div>
+<div class="scan-bar" id="scanBar"></div>
+<div class="vhs-glitch" id="vhsGlitch"></div>
+<div class="vignette"></div>
+<div class="sunshine-glow"></div>
+
+<!-- HUD -->
+<div class="channel-badge" id="channelBadge">CH 03 ☀️</div>
+<div class="rec-indicator" id="recIndicator">
+  <div class="rec-dot"></div>
+  REC
+</div>
+<div class="now-playing" id="nowPlaying">◈ THE SUNSHINE MAKERS — 1935 ◈</div>
+
+<!-- Chat Ticker -->
+<div class="chat-ticker" id="chatTicker">
+  <span class="chat-text" id="chatText">
+    Welcome to the stream... Today we're watching The Sunshine Makers (1935) — a 7-minute cartoon about gnomes defeating sadness with weaponized milk...
+  </span>
+</div>
+
+<!-- Lower Third -->
+<div class="lower-third" id="lowerThird">THE SUNSHINE MAKERS</div>
+<div class="lower-third-sub" id="lowerThirdSub">1935 • Borden Milk propaganda • weaponized dairy</div>
+
+<!-- Audio Viz -->
+<div class="audio-viz" id="audioViz"></div>
+
+<script>
+// Generate audio viz bars (deterministic)
+const audioViz = document.getElementById('audioViz');
+for (let i = 0; i < 10; i++) {
+  const bar = document.createElement('div');
+  bar.className = 'viz-bar';
+  bar.style.animationDuration = (0.3 + (i % 3) * 0.15) + 's';
+  bar.style.animationDelay = (i * 0.05) + 's';
+  audioViz.appendChild(bar);
+}
+
+// Chat ticker scroll
+const chatText = document.getElementById('chatText');
+let chatPos = 0;
+function scrollChat() {
+  chatPos -= 1;
+  if (chatPos < -chatText.scrollWidth) {
+    chatPos = window.innerWidth;
+  }
+  chatText.style.transform = `translateX(${chatPos}px)`;
+  requestAnimationFrame(scrollChat);
+}
+scrollChat();
+
+// Public API
+window.SunshineTV = {
+  setChannel(text) {
+    document.getElementById('channelBadge').textContent = text;
+  },
+  setRecording(on) {
+    document.getElementById('recIndicator').style.display = on ? 'flex' : 'none';
+  },
+  setChatText(text) {
+    document.getElementById('chatText').textContent = text;
+    chatPos = window.innerWidth;
+  },
+  setNowPlaying(text) {
+    document.getElementById('nowPlaying').textContent = text;
+  },
+  setLowerTitle(text) {
+    document.getElementById('lowerThird').textContent = text;
+  },
+  setLowerSub(text) {
+    document.getElementById('lowerThirdSub').textContent = text;
+  },
+  flash() {
+    const el = document.querySelector('.vhs-glitch');
+    el.style.opacity = '1';
+    el.style.top = (Math.random() * 80 + 10) + '%';
+    setTimeout(() => el.style.opacity = '0', 200);
+  }
+};
+
+console.log('☀️ Sunshine TV loaded. window.SunshineTV API available.');
+</script>
+</body>
+</html>

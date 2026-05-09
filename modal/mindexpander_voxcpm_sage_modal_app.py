@@ -86,16 +86,16 @@ def apply_sage_patch():
 
         F.scaled_dot_product_attention = _patched_sdp
         SAGE_PATCH_APPLIED = True
-        print("[sage-patch] SageAttention monkey-patch applied successfully.")
+        print(f"[sage-patch] SUCCESS — SageAttention monkey-patch applied.", flush=True)
         return True
 
     except ImportError as e:
         SAGE_PATCH_ERROR = f"ImportError: {e}"
-        print(f"[sage-patch] SageAttention not available ({e}), using stock SDPA.")
+        print(f"[sage-patch] FAILED ImportError: {e}", flush=True)
         return False
     except Exception as e:
         SAGE_PATCH_ERROR = f"{type(e).__name__}: {e}"
-        print(f"[sage-patch] SageAttention patch failed ({e}), using stock SDPA.")
+        print(f"[sage-patch] FAILED {type(e).__name__}: {e}", flush=True)
         return False
 
 
