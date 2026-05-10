@@ -26,17 +26,22 @@ FINAL_SR = 24000
 LOUDNORM_TARGET = -16   # LUFS target for consistent volume
 
 # ── conversation script ─────────────────────────────────────────────────────
+# ── conversation script (🌌 QA LOG #TC-0002 — Billing Dispute) ─────────────
 CONVERSATION = [
     # (speaker, text)
-    ("agent", "Thank you for calling Mind Expansion Technical Support. This is Alex. How can I help you today?"),
-    ("caller", "Yeah hi. I've been on hold for like forty-five minutes. I'm trying to get my consciousness expansion module to work and honestly this is the third time I've called about this."),
-    ("agent", "I understand your frustration, sir. Let me pull up your account. Can I get your expansion license number?"),
-    ("caller", "I don't have my license number. I told the last two people. The module won't even boot up. It just flashes orange and makes this weird humming noise. I paid for the premium tier."),
-    ("agent", "Okay, well, let's go ahead and try some basic troubleshooting. Have you tried unplugging the module and plugging it back in?"),
-    ("caller", "Are you serious? Yes I've tried that. I've tried everything. I reset the neural interface three times. I even recalibrated the quantum entanglement array myself. Which I'm pretty sure voids the warranty. But nobody else would help me."),
-    ("agent", "I see. Well, unfortunately, if you've performed unauthorized recalibration, that would indeed fall outside our standard support coverage."),
-    ("caller", "Oh so now you're gonna use that against me? I only did that because your support team never calls back. I've been waiting two weeks. Two weeks. Meanwhile my third eye is literally stuck halfway open. Do you know what that's like?"),
-    ("agent", "I understand this must be uncomfortable. Let me check with our advanced resolution team. Please hold."),
+    ("agent", "Thank you for calling Mind Expansion Billing Department. This is Jordan. How can I assist you today?"),
+    ("caller", "Yeah, I just checked my credit statement and there's a charge for forty-nine ninety-nine for something called Intergalactic Premium Consciousness Streaming. I did not sign up for this."),
+    ("agent", "Let me pull up your account. Can I get your expansion license number or the last four digits of your cosmic signature?"),
+    ("caller", "I don't know my cosmic signature. Nobody told me I'd need a cosmic signature. I just want this charge reversed. It's been three months. That's a hundred and fifty dollars."),
+    ("agent", "I understand. Let me look at your subscription history. I'm showing here that you accepted the premium trial during your last firmware update. It converts to paid after thirty days."),
+    ("caller", "Wait. What? You mean that checkbox I clicked to update my consciousness module automatically signed me up for a subscription? That's buried on page forty-seven of the terms nobody reads."),
+    ("agent", "The terms are available for review at any time, sir. Would you like me to read them to you now?"),
+    ("caller", "No, I don't want you to read them. I want you to cancel it and refund me. I haven't even used premium streaming. My consciousness has been streaming at the same resolution it always has. Standard definition thoughts. Basic cable consciousness."),
+    ("agent", "I can help you with the cancellation, but unfortunately our refund policy only covers the most recent billing cycle. That would be forty-nine ninety-nine."),
+    ("caller", "So you're telling me I'm out a hundred bucks because of a checkbox? That's insane. This is exactly the kind of thing the Intergalactic Consumer Protection Agency should know about."),
+    ("agent", "You're certainly welcome to file a complaint, sir. I can provide you with the case reference number for the ICP-A."),
+    ("caller", "Oh, I bet you can. What's the number? Write this down. I want everything documented. Every single charge. Every single call."),
+    ("agent", "Let me pull up that reference number for you now. Please hold."),
 ]
 
 # ── helpers ──────────────────────────────────────────────────────────────────
