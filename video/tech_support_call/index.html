@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tech Support Call</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { margin: 0; background: #000; }
+  
+  #stage {
+    position: relative;
+    overflow: hidden;
+    background: #06060d;
+    font-family: "Courier New", monospace;
+  }
+
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px);
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 1;
+  }
+
+  .call-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 60px;
+    background: rgba(17,17,34,0.95);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    padding: 0 36px;
+    gap: 18px;
+    z-index: 50;
+  }
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+  }
+  .call-label {
+    font-size: 16px;
+    color: #555577;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .timer {
+    font-size: 22px;
+    color: #e0e0f0;
+    margin-left: auto;
+    letter-spacing: 3px;
+    font-weight: bold;
+  }
+
+  .avatar-caller {
+    position: absolute;
+    top: 96px;
+    left: 56px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .avatar-agent {
+    position: absolute;
+    bottom: 190px;
+    right: 56px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .avatar-circle {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+  .caller-circle {
+    background: linear-gradient(135deg, #ff2d75, #ff6b9d);
+    box-shadow: 0 0 32px rgba(255,45,117,0.25);
+  }
+  .agent-circle {
+    background: linear-gradient(135deg, #0088cc, #00d4ff);
+    box-shadow: 0 0 32px rgba(0,136,204,0.25);
+  }
+  .avatar-label {
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .caller-label { color: #ff6b9d; }
+  .agent-label { color: #00d4ff; }
+
+  .bubble-caller, .bubble-agent {
+    position: absolute;
+    max-width: 500px;
+    padding: 18px 24px;
+    border-radius: 16px;
+    font-size: 22px;
+    line-height: 1.4;
+    color: #e0e0f0;
+    opacity: 0;
+    z-index: 9;
+  }
+  .bubble-caller {
+    top: 110px; left: 175px;
+    background: rgba(255,45,117,0.07);
+    border: 1px solid rgba(255,107,157,0.2);
+  }
+  .bubble-agent {
+    bottom: 200px; right: 175px;
+    text-align: right;
+    background: rgba(0,136,204,0.07);
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+
+  .caption-container {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 60;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 1500px;
+    gap: 0;
+  }
+  .caption-word {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0 5px;
+    opacity: 0.15;
+    letter-spacing: 1px;
+    color: #ffffff;
+  }
+  .caption-word.caller-word { color: #ff6b9d; text-shadow: 0 0 10px rgba(255,107,157,0.5); }
+  .caption-word.agent-word { color: #00d4ff; text-shadow: 0 0 10px rgba(0,212,255,0.5); }
+  .caption-word.active { opacity: 1; }
+
+  .hold-indicator {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    color: #ff6b9d;
+    letter-spacing: 10px;
+    text-transform: uppercase;
+    opacity: 0;
+    z-index: 50;
+  }
+</style>
+</head>
+<body>
+
+<div id="stage"
+  data-composition-id="main"
+  data-start="0"
+  data-duration="115.5"
+  data-width="1920"
+  data-height="1080">
+
+<div class="grid"></div>
+<div class="scanlines"></div>
+
+<div class="call-bar">
+  <div class="status-dot" id="statusDot"></div>
+  <span class="call-label" id="callLabel">CALL IN PROGRESS</span>
+  <span class="timer" id="timer">00:00</span>
+</div>
+
+<div class="avatar-caller" id="callerAvatar">
+  <div class="avatar-circle caller-circle">🧠</div>
+  <div class="avatar-label caller-label">MIND EXPANDER</div>
+</div>
+
+<div class="avatar-agent" id="agentAvatar">
+  <div class="avatar-circle agent-circle">📞</div>
+  <div class="avatar-label agent-label">TECH SUPPORT</div>
+</div>
+
+<div class="bubble-caller" id="callerBubble"></div>
+<div class="bubble-agent" id="agentBubble"></div>
+
+<div class="hold-indicator" id="holdIndicator">🎵 ON HOLD</div>
+
+<div class="caption-container" id="captionContainer"></div>
+
+<audio id="audioTrack" data-start="0" data-duration="115.5" data-track-index="0" src="assets/tech_support_call_v4.mp3"></audio>
+
+</div><!-- #stage -->
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script>
+// Build caption elements
+var captions = [{"word": "Thank", "start": 0.7, "end": 1.22, "speaker": "agent"}, {"word": "you", "start": 1.22, "end": 1.46, "speaker": "agent"}, {"word": "for", "start": 1.46, "end": 1.62, "speaker": "agent"}, {"word": "calling", "start": 1.62, "end": 2.06, "speaker": "agent"}, {"word": "Mind", "start": 2.06, "end": 2.44, "speaker": "agent"}, {"word": "Expansion", "start": 2.44, "end": 3.18, "speaker": "agent"}, {"word": "Technical", "start": 3.18, "end": 3.62, "speaker": "agent"}, {"word": "Support.", "start": 3.62, "end": 4.1, "speaker": "agent"}, {"word": "This", "start": 5.04, "end": 5.56, "speaker": "caller"}, {"word": "is", "start": 5.56, "end": 5.96, "speaker": "caller"}, {"word": "Alex.", "start": 5.96, "end": 6.32, "speaker": "caller"}, {"word": "How", "start": 7.72, "end": 8.24, "speaker": "agent"}, {"word": "can", "start": 8.24, "end": 8.42, "speaker": "agent"}, {"word": "I", "start": 8.42, "end": 8.56, "speaker": "agent"}, {"word": "help", "start": 8.56, "end": 8.78, "speaker": "agent"}, {"word": "you", "start": 8.78, "end": 8.98, "speaker": "agent"}, {"word": "today?", "start": 8.98, "end": 9.3, "speaker": "agent"}, {"word": "Yeah,", "start": 9.88, "end": 10.04, "speaker": "caller"}, {"word": "hi.", "start": 10.38, "end": 10.44, "speaker": "caller"}, {"word": "I've", "start": 10.7, "end": 10.8, "speaker": "agent"}, {"word": "been", "start": 10.8, "end": 10.9, "speaker": "agent"}, {"word": "on", "start": 10.9, "end": 11.06, "speaker": "agent"}, {"word": "hold", "start": 11.06, "end": 11.22, "speaker": "agent"}, {"word": "for", "start": 11.22, "end": 11.46, "speaker": "agent"}, {"word": "like", "start": 11.46, "end": 11.62, "speaker": "agent"}, {"word": "45", "start": 11.62, "end": 12.14, "speaker": "agent"}, {"word": "minutes.", "start": 12.14, "end": 12.56, "speaker": "agent"}, {"word": "I'm", "start": 12.82, "end": 12.96, "speaker": "caller"}, {"word": "trying", "start": 12.96, "end": 13.18, "speaker": "caller"}, {"word": "to", "start": 13.18, "end": 13.4, "speaker": "caller"}, {"word": "get", "start": 13.4, "end": 13.56, "speaker": "caller"}, {"word": "my", "start": 13.56, "end": 13.76, "speaker": "caller"}, {"word": "consciousness", "start": 13.76, "end": 14.18, "speaker": "caller"}, {"word": "expansion", "start": 14.18, "end": 14.88, "speaker": "caller"}, {"word": "module", "start": 14.88, "end": 15.44, "speaker": "caller"}, {"word": "to", "start": 15.44, "end": 15.78, "speaker": "caller"}, {"word": "work.", "start": 15.78, "end": 16.04, "speaker": "caller"}, {"word": "And", "start": 16.62, "end": 16.68, "speaker": "agent"}, {"word": "honestly,", "start": 16.68, "end": 17.18, "speaker": "agent"}, {"word": "this", "start": 17.32, "end": 17.42, "speaker": "agent"}, {"word": "is", "start": 17.42, "end": 17.58, "speaker": "agent"}, {"word": "the", "start": 17.58, "end": 17.78, "speaker": "agent"}, {"word": "third", "start": 17.78, "end": 18.04, "speaker": "agent"}, {"word": "time", "start": 18.04, "end": 18.3, "speaker": "agent"}, {"word": "I've", "start": 18.3, "end": 18.58, "speaker": "agent"}, {"word": "called", "start": 18.58, "end": 18.76, "speaker": "agent"}, {"word": "about", "start": 18.76, "end": 19.1, "speaker": "agent"}, {"word": "this.", "start": 19.1, "end": 19.62, "speaker": "agent"}, {"word": "I", "start": 20.48, "end": 20.48, "speaker": "caller"}, {"word": "understand", "start": 20.48, "end": 22.5, "speaker": "caller"}, {"word": "your", "start": 22.5, "end": 22.74, "speaker": "caller"}, {"word": "frustration,", "start": 22.74, "end": 23.26, "speaker": "caller"}, {"word": "sir.", "start": 23.4, "end": 23.6, "speaker": "caller"}, {"word": "Let", "start": 24.84, "end": 25.36, "speaker": "agent"}, {"word": "me", "start": 25.36, "end": 25.5, "speaker": "agent"}, {"word": "pull", "start": 25.5, "end": 25.72, "speaker": "agent"}, {"word": "up", "start": 25.72, "end": 25.88, "speaker": "agent"}, {"word": "your", "start": 25.88, "end": 26.0, "speaker": "agent"}, {"word": "account.", "start": 26.0, "end": 26.42, "speaker": "agent"}, {"word": "Can", "start": 27.34, "end": 27.54, "speaker": "caller"}, {"word": "I", "start": 27.54, "end": 27.64, "speaker": "caller"}, {"word": "get", "start": 27.64, "end": 27.76, "speaker": "caller"}, {"word": "your", "start": 27.76, "end": 27.92, "speaker": "caller"}, {"word": "expansion", "start": 27.92, "end": 28.26, "speaker": "caller"}, {"word": "license", "start": 28.26, "end": 28.66, "speaker": "caller"}, {"word": "number?", "start": 28.66, "end": 29.08, "speaker": "caller"}, {"word": "I", "start": 29.72, "end": 29.98, "speaker": "agent"}, {"word": "don't", "start": 29.98, "end": 30.18, "speaker": "agent"}, {"word": "have", "start": 30.18, "end": 30.42, "speaker": "agent"}, {"word": "my", "start": 30.42, "end": 30.72, "speaker": "agent"}, {"word": "license", "start": 30.72, "end": 31.1, "speaker": "agent"}, {"word": "number.", "start": 31.1, "end": 31.6, "speaker": "agent"}, {"word": "I", "start": 32.2, "end": 32.26, "speaker": "caller"}, {"word": "told", "start": 32.26, "end": 32.48, "speaker": "caller"}, {"word": "the", "start": 32.48, "end": 32.68, "speaker": "caller"}, {"word": "last", "start": 32.68, "end": 32.88, "speaker": "caller"}, {"word": "two", "start": 32.88, "end": 33.18, "speaker": "caller"}, {"word": "people,", "start": 33.18, "end": 33.56, "speaker": "caller"}, {"word": "the", "start": 33.98, "end": 34.08, "speaker": "caller"}, {"word": "module", "start": 34.08, "end": 34.44, "speaker": "caller"}, {"word": "won't", "start": 34.44, "end": 34.78, "speaker": "caller"}, {"word": "even", "start": 34.78, "end": 35.04, "speaker": "caller"}, {"word": "boot", "start": 35.04, "end": 35.3, "speaker": "caller"}, {"word": "up.", "start": 35.3, "end": 35.58, "speaker": "caller"}, {"word": "It", "start": 35.72, "end": 35.76, "speaker": "agent"}, {"word": "just", "start": 35.76, "end": 35.94, "speaker": "agent"}, {"word": "flashes", "start": 35.94, "end": 36.36, "speaker": "agent"}, {"word": "orange", "start": 36.36, "end": 36.86, "speaker": "agent"}, {"word": "and", "start": 36.86, "end": 37.16, "speaker": "agent"}, {"word": "makes", "start": 37.16, "end": 37.32, "speaker": "agent"}, {"word": "this", "start": 37.32, "end": 37.56, "speaker": "agent"}, {"word": "weird", "start": 37.56, "end": 37.94, "speaker": "agent"}, {"word": "humming", "start": 37.94, "end": 38.28, "speaker": "agent"}, {"word": "noise.", "start": 38.28, "end": 38.68, "speaker": "agent"}, {"word": "I", "start": 39.22, "end": 39.3, "speaker": "caller"}, {"word": "paid", "start": 39.3, "end": 39.54, "speaker": "caller"}, {"word": "for", "start": 39.54, "end": 39.74, "speaker": "caller"}, {"word": "the", "start": 39.74, "end": 39.86, "speaker": "caller"}, {"word": "premium", "start": 39.86, "end": 40.22, "speaker": "caller"}, {"word": "tier.", "start": 40.22, "end": 40.56, "speaker": "caller"}, {"word": "Okay,", "start": 42.7, "end": 43.22, "speaker": "agent"}, {"word": "well,", "start": 43.44, "end": 43.58, "speaker": "agent"}, {"word": "let's", "start": 44.16, "end": 44.5, "speaker": "agent"}, {"word": "go", "start": 44.5, "end": 44.62, "speaker": "agent"}, {"word": "ahead", "start": 44.62, "end": 44.8, "speaker": "agent"}, {"word": "and", "start": 44.8, "end": 44.92, "speaker": "agent"}, {"word": "try", "start": 44.92, "end": 45.14, "speaker": "agent"}, {"word": "some", "start": 45.14, "end": 45.38, "speaker": "agent"}, {"word": "basic", "start": 45.38, "end": 45.7, "speaker": "agent"}, {"word": "troubleshooting.", "start": 45.7, "end": 46.42, "speaker": "agent"}, {"word": "Have", "start": 48.2, "end": 48.72, "speaker": "caller"}, {"word": "you", "start": 48.72, "end": 48.84, "speaker": "caller"}, {"word": "tried", "start": 48.84, "end": 49.1, "speaker": "caller"}, {"word": "unplugging", "start": 49.1, "end": 49.58, "speaker": "caller"}, {"word": "the", "start": 49.58, "end": 49.7, "speaker": "caller"}, {"word": "module", "start": 49.7, "end": 50.04, "speaker": "caller"}, {"word": "and", "start": 50.04, "end": 50.28, "speaker": "caller"}, {"word": "plugging", "start": 50.28, "end": 50.58, "speaker": "caller"}, {"word": "it", "start": 50.58, "end": 50.76, "speaker": "caller"}, {"word": "back", "start": 50.76, "end": 50.96, "speaker": "caller"}, {"word": "in?", "start": 50.96, "end": 51.22, "speaker": "caller"}, {"word": "Are", "start": 51.7, "end": 52.06, "speaker": "agent"}, {"word": "you", "start": 52.06, "end": 52.18, "speaker": "agent"}, {"word": "serious?", "start": 52.18, "end": 52.58, "speaker": "agent"}, {"word": "Yes,", "start": 53.06, "end": 53.22, "speaker": "caller"}, {"word": "I've", "start": 53.32, "end": 53.48, "speaker": "caller"}, {"word": "tried", "start": 53.48, "end": 53.7, "speaker": "caller"}, {"word": "that.", "start": 53.7, "end": 53.94, "speaker": "caller"}, {"word": "I've", "start": 54.08, "end": 54.2, "speaker": "agent"}, {"word": "tried", "start": 54.2, "end": 54.36, "speaker": "agent"}, {"word": "everything.", "start": 54.36, "end": 54.84, "speaker": "agent"}, {"word": "I", "start": 55.2, "end": 55.38, "speaker": "caller"}, {"word": "reset", "start": 55.38, "end": 55.74, "speaker": "caller"}, {"word": "the", "start": 55.74, "end": 55.94, "speaker": "caller"}, {"word": "neural", "start": 55.94, "end": 56.14, "speaker": "caller"}, {"word": "interface", "start": 56.14, "end": 56.54, "speaker": "caller"}, {"word": "three", "start": 56.54, "end": 56.9, "speaker": "caller"}, {"word": "times.", "start": 56.9, "end": 57.26, "speaker": "caller"}, {"word": "I", "start": 57.26, "end": 57.54, "speaker": "caller"}, {"word": "even", "start": 57.54, "end": 57.78, "speaker": "agent"}, {"word": "recalibrated", "start": 57.78, "end": 58.74, "speaker": "agent"}, {"word": "the", "start": 58.74, "end": 58.92, "speaker": "agent"}, {"word": "quantum", "start": 58.92, "end": 59.28, "speaker": "agent"}, {"word": "entanglement", "start": 59.28, "end": 59.9, "speaker": "agent"}, {"word": "array", "start": 59.9, "end": 60.14, "speaker": "agent"}, {"word": "myself,", "start": 60.14, "end": 60.66, "speaker": "agent"}, {"word": "which", "start": 60.9, "end": 61.46, "speaker": "caller"}, {"word": "I'm", "start": 61.46, "end": 61.68, "speaker": "caller"}, {"word": "pretty", "start": 61.68, "end": 61.84, "speaker": "caller"}, {"word": "sure", "start": 61.84, "end": 62.14, "speaker": "caller"}, {"word": "avoids", "start": 62.14, "end": 62.64, "speaker": "caller"}, {"word": "the", "start": 62.64, "end": 62.82, "speaker": "caller"}, {"word": "warranty,", "start": 62.82, "end": 63.24, "speaker": "caller"}, {"word": "but", "start": 63.62, "end": 63.82, "speaker": "agent"}, {"word": "nobody", "start": 63.82, "end": 64.12, "speaker": "agent"}, {"word": "else", "start": 64.12, "end": 64.42, "speaker": "agent"}, {"word": "would", "start": 64.42, "end": 64.58, "speaker": "agent"}, {"word": "help", "start": 64.58, "end": 64.78, "speaker": "agent"}, {"word": "me.", "start": 64.78, "end": 65.12, "speaker": "agent"}, {"word": "I", "start": 67.56, "end": 68.2, "speaker": "caller"}, {"word": "see.", "start": 68.2, "end": 68.5, "speaker": "caller"}, {"word": "Well,", "start": 71.0, "end": 71.64, "speaker": "agent"}, {"word": "unfortunately,", "start": 71.64, "end": 72.28, "speaker": "agent"}, {"word": "if", "start": 72.82, "end": 73.28, "speaker": "agent"}, {"word": "you've", "start": 73.28, "end": 73.46, "speaker": "agent"}, {"word": "performed", "start": 73.46, "end": 73.88, "speaker": "agent"}, {"word": "unauthorized", "start": 73.88, "end": 74.78, "speaker": "agent"}, {"word": "recalibration,", "start": 74.78, "end": 75.56, "speaker": "agent"}, {"word": "that", "start": 76.04, "end": 76.26, "speaker": "caller"}, {"word": "would", "start": 76.26, "end": 76.44, "speaker": "caller"}, {"word": "indeed", "start": 76.44, "end": 76.78, "speaker": "caller"}, {"word": "fall", "start": 76.78, "end": 77.1, "speaker": "caller"}, {"word": "outside", "start": 77.1, "end": 77.64, "speaker": "caller"}, {"word": "our", "start": 77.64, "end": 77.86, "speaker": "caller"}, {"word": "standard", "start": 77.86, "end": 78.22, "speaker": "caller"}, {"word": "support", "start": 78.22, "end": 78.62, "speaker": "caller"}, {"word": "coverage.", "start": 78.62, "end": 79.08, "speaker": "caller"}, {"word": "Oh,", "start": 79.58, "end": 79.86, "speaker": "agent"}, {"word": "so", "start": 80.0, "end": 80.08, "speaker": "agent"}, {"word": "now", "start": 80.08, "end": 80.24, "speaker": "agent"}, {"word": "you're", "start": 80.24, "end": 80.4, "speaker": "agent"}, {"word": "going", "start": 80.4, "end": 80.5, "speaker": "agent"}, {"word": "to", "start": 80.5, "end": 80.58, "speaker": "agent"}, {"word": "use", "start": 80.58, "end": 80.76, "speaker": "agent"}, {"word": "that", "start": 80.76, "end": 80.94, "speaker": "agent"}, {"word": "against", "start": 80.94, "end": 81.22, "speaker": "agent"}, {"word": "me?", "start": 81.22, "end": 81.56, "speaker": "agent"}, {"word": "I", "start": 81.98, "end": 82.12, "speaker": "caller"}, {"word": "only", "start": 82.12, "end": 82.34, "speaker": "caller"}, {"word": "did", "start": 82.34, "end": 82.54, "speaker": "caller"}, {"word": "that", "start": 82.54, "end": 82.72, "speaker": "caller"}, {"word": "because", "start": 82.72, "end": 83.0, "speaker": "caller"}, {"word": "your", "start": 83.0, "end": 83.22, "speaker": "caller"}, {"word": "support", "start": 83.22, "end": 83.64, "speaker": "caller"}, {"word": "team", "start": 83.64, "end": 84.02, "speaker": "caller"}, {"word": "never", "start": 84.02, "end": 84.36, "speaker": "caller"}, {"word": "calls", "start": 84.36, "end": 84.72, "speaker": "caller"}, {"word": "back.", "start": 84.72, "end": 85.04, "speaker": "caller"}, {"word": "I've", "start": 85.04, "end": 85.74, "speaker": "caller"}, {"word": "been", "start": 85.74, "end": 85.84, "speaker": "agent"}, {"word": "waiting", "start": 85.84, "end": 86.08, "speaker": "agent"}, {"word": "two", "start": 86.08, "end": 86.46, "speaker": "agent"}, {"word": "weeks,", "start": 86.46, "end": 86.8, "speaker": "agent"}, {"word": "two", "start": 87.1, "end": 87.48, "speaker": "agent"}, {"word": "weeks.", "start": 87.48, "end": 87.9, "speaker": "agent"}, {"word": "Meanwhile,", "start": 88.38, "end": 88.72, "speaker": "caller"}, {"word": "my", "start": 88.84, "end": 88.96, "speaker": "caller"}, {"word": "third", "start": 88.96, "end": 89.22, "speaker": "caller"}, {"word": "eye", "start": 89.22, "end": 89.46, "speaker": "caller"}, {"word": "is", "start": 89.46, "end": 89.74, "speaker": "caller"}, {"word": "literally", "start": 89.74, "end": 90.12, "speaker": "caller"}, {"word": "stuck", "start": 90.12, "end": 90.58, "speaker": "caller"}, {"word": "halfway", "start": 90.58, "end": 91.12, "speaker": "caller"}, {"word": "open.", "start": 91.12, "end": 91.58, "speaker": "caller"}, {"word": "Do", "start": 92.06, "end": 92.14, "speaker": "agent"}, {"word": "you", "start": 92.14, "end": 92.22, "speaker": "agent"}, {"word": "know", "start": 92.22, "end": 92.34, "speaker": "agent"}, {"word": "what", "start": 92.34, "end": 92.48, "speaker": "agent"}, {"word": "that's", "start": 92.48, "end": 92.86, "speaker": "agent"}, {"word": "like?", "start": 92.86, "end": 93.06, "speaker": "agent"}, {"word": "I", "start": 93.82, "end": 94.34, "speaker": "caller"}, {"word": "understand", "start": 94.34, "end": 94.82, "speaker": "caller"}, {"word": "this", "start": 94.82, "end": 95.26, "speaker": "caller"}, {"word": "must", "start": 95.26, "end": 95.48, "speaker": "caller"}, {"word": "be", "start": 95.48, "end": 95.76, "speaker": "caller"}, {"word": "uncomfortable.", "start": 95.76, "end": 96.32, "speaker": "caller"}, {"word": "Let", "start": 97.04, "end": 97.32, "speaker": "agent"}, {"word": "me", "start": 97.32, "end": 97.46, "speaker": "agent"}, {"word": "check", "start": 97.46, "end": 97.72, "speaker": "agent"}, {"word": "with", "start": 97.72, "end": 97.94, "speaker": "agent"}, {"word": "our", "start": 97.94, "end": 98.12, "speaker": "agent"}, {"word": "advanced", "start": 98.12, "end": 98.58, "speaker": "agent"}, {"word": "resolution", "start": 98.58, "end": 99.02, "speaker": "agent"}, {"word": "team.", "start": 99.02, "end": 99.62, "speaker": "agent"}, {"word": "Please", "start": 100.22, "end": 100.88, "speaker": "caller"}, {"word": "hold.", "start": 100.88, "end": 101.46, "speaker": "caller"}];
+var segments = [{"start": 0.7, "end": 4.1, "speaker": "agent"}, {"start": 5.04, "end": 6.32, "speaker": "caller"}, {"start": 7.72, "end": 9.3, "speaker": "agent"}, {"start": 9.88, "end": 10.44, "speaker": "caller"}, {"start": 10.7, "end": 12.56, "speaker": "agent"}, {"start": 12.82, "end": 16.04, "speaker": "caller"}, {"start": 16.62, "end": 19.62, "speaker": "agent"}, {"start": 20.48, "end": 23.6, "speaker": "caller"}, {"start": 24.84, "end": 26.42, "speaker": "agent"}, {"start": 27.34, "end": 29.08, "speaker": "caller"}, {"start": 29.88, "end": 31.6, "speaker": "agent"}, {"start": 32.2, "end": 35.58, "speaker": "caller"}, {"start": 35.72, "end": 38.68, "speaker": "agent"}, {"start": 39.22, "end": 40.56, "speaker": "caller"}, {"start": 42.7, "end": 46.42, "speaker": "agent"}, {"start": 48.2, "end": 51.22, "speaker": "caller"}, {"start": 51.7, "end": 52.58, "speaker": "agent"}, {"start": 53.06, "end": 53.94, "speaker": "caller"}, {"start": 54.08, "end": 54.84, "speaker": "agent"}, {"start": 55.2, "end": 57.26, "speaker": "caller"}, {"start": 57.26, "end": 60.66, "speaker": "agent"}, {"start": 60.9, "end": 63.24, "speaker": "caller"}, {"start": 63.62, "end": 65.12, "speaker": "agent"}, {"start": 67.56, "end": 68.5, "speaker": "caller"}, {"start": 71.0, "end": 75.56, "speaker": "agent"}, {"start": 76.04, "end": 79.08, "speaker": "caller"}, {"start": 79.58, "end": 81.56, "speaker": "agent"}, {"start": 81.98, "end": 85.04, "speaker": "caller"}, {"start": 85.04, "end": 87.9, "speaker": "agent"}, {"start": 88.38, "end": 91.58, "speaker": "caller"}, {"start": 92.06, "end": 93.06, "speaker": "agent"}, {"start": 93.82, "end": 96.32, "speaker": "caller"}, {"start": 97.04, "end": 99.62, "speaker": "agent"}, {"start": 100.22, "end": 101.46, "speaker": "caller"}];
+var totalDur = 115.5;
+
+var container = document.getElementById("captionContainer");
+var wordEls = [];
+captions.forEach(function(w, i) {
+  var span = document.createElement("span");
+  span.className = "caption-word " + (w.speaker === "caller" ? "caller-word" : "agent-word");
+  span.textContent = w.word;
+  container.appendChild(span);
+  wordEls.push(span);
+});
+
+// Timeline
+window.__timelines = window.__timelines || {};
+var tl = gsap.timeline({ paused: true });
+
+// Timer
+tl.to("#timer", {
+  duration: totalDur,
+  onUpdate: function() {
+    var t = this.time();
+    var m = Math.floor(t / 60);
+    var s = Math.floor(t % 60);
+    document.getElementById("timer").textContent = 
+      String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+  },
+  ease: "none"
+}, 0);
+
+// Speaker bubbles + avatar pulses
+var cb = document.getElementById("callerBubble");
+var ab = document.getElementById("agentBubble");
+
+segments.forEach(function(seg) {
+  var segWords = captions.filter(function(w) { 
+    return w.start >= seg.start - 0.05 && w.end <= seg.end + 0.05; 
+  });
+  var txt = segWords.map(function(w) { return w.word; }).join(" ");
+  
+  if (seg.speaker === "caller") {
+    tl.call(function() {
+      cb.textContent = txt;
+      cb.style.opacity = "1";
+      ab.style.opacity = "0";
+    }, null, seg.start);
+    
+    tl.to("#callerAvatar", { scale: 1.06, duration: 0.12, ease: "power2.out" }, seg.start);
+    tl.to("#callerAvatar", { scale: 1.0, duration: 0.25, ease: "power2.in" }, seg.start + 0.15);
+    
+    tl.call(function() { cb.style.opacity = "0"; }, null, seg.end + 0.4);
+  } else {
+    tl.call(function() {
+      ab.textContent = txt;
+      ab.style.opacity = "1";
+      cb.style.opacity = "0";
+    }, null, seg.start);
+    
+    tl.to("#agentAvatar", { scale: 1.06, duration: 0.12, ease: "power2.out" }, seg.start);
+    tl.to("#agentAvatar", { scale: 1.0, duration: 0.25, ease: "power2.in" }, seg.start + 0.15);
+    
+    tl.call(function() { ab.style.opacity = "0"; }, null, seg.end + 0.4);
+  }
+});
+
+// Word captions — sliding window
+var MAX = 7;
+captions.forEach(function(w, i) {
+  tl.call(function() {
+    wordEls[i].classList.add("active");
+    var kill = i - MAX;
+    if (kill >= 0) wordEls[kill].classList.remove("active");
+    var dim = i - MAX - 4;
+    if (dim >= 0) wordEls[dim].style.opacity = "0.08";
+  }, null, w.start);
+});
+
+// Hold indicator
+var holdStart = totalDur - 14;
+tl.call(function() {
+  document.getElementById("holdIndicator").style.opacity = "1";
+  document.getElementById("statusDot").style.background = "#ffaa00";
+  document.getElementById("statusDot").style.boxShadow = "0 0 8px #ffaa00";
+  document.getElementById("callLabel").textContent = "ON HOLD";
+}, null, holdStart);
+
+tl.to("#holdIndicator", { 
+  opacity: 0.35, duration: 1, 
+  repeat: Math.ceil(14 / 2) - 1, 
+  yoyo: true, 
+  ease: "sine.inOut" 
+}, holdStart);
+
+// Final fade
+tl.to("#stage", { opacity: 0, duration: 0.8 }, totalDur - 0.5);
+
+window.__timelines["main"] = tl;
+</script>
+
+</body>
+</html>
