@@ -7,9 +7,9 @@
 - **Audio:** AAC, dual-voice conversation
 
 ## Title Options
-1. **Me vs. Mind Expansion Tech Support (Animated Phone Call)**
-2. **"Have You Tried Unplugging It?" — Worst Tech Support Call Ever**
-3. **My Third Eye Is Stuck Half Open — Calling Tech Support**
+1. **📞 Tech Support Call — 🌌 QA LOG #TC-0001 — "Have You Tried Unplugging It?"**
+2. **Me vs. Mind Expansion Tech Support — 🌌 QA LOG #TC-0001 (Animated)**
+3. **INTERGALACTIC QA CALL #TC-0001: My Third Eye Is Stuck Half Open**
 
 ## Description
 ```
