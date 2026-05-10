@@ -5,7 +5,7 @@
 | QA LOG # | Date | Title | Duration | Speakers | Status |
 |---|---|---|---|---|---|
 | **#TC-0001** | 2026-05-10 | Tech Support Call — "Have You Tried Unplugging It?" | 1:55 | MindExpander vs Tech Support | ✅ Delivered |
-| **#TC-0002** | 2026-05-10 | Billing Dispute — "I Did NOT Sign Up For Premium Streaming" | ~2:00 | MindExpander vs Billing Dept | 🔄 Generating |
+| **#TC-0002** | 2026-05-10 | Billing Dispute — "I Did NOT Sign Up For Premium Streaming" | 2:36 | MindExpander vs Billing Dept | ✅ Delivered |
 
 ---
 
